@@ -11,6 +11,10 @@ plugins {
 dependencies {
     implementation("org.apache.commons:commons-text")
     implementation(project(":utilities"))
+
+    // Command line interface library
+    implementation("info.picocli:picocli:4.6.3")
+
 }
 
 application {
