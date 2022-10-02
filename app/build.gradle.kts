@@ -23,10 +23,13 @@ application {
     mainClass.set("friendlytemplate.app.App")
 }
 
+// Enable picocli annotation processor
 tasks.withType<JavaCompile> {
     val compilerArgs = options.compilerArgs
     compilerArgs.add("-Aproject=${project.group}/${project.name}")
 }
+
+// Make sure the "run" task allows us to run an interactive shell
 tasks.getByName("run", JavaExec::class) {
     standardInput = System.`in`
 }
