@@ -14,10 +14,19 @@ dependencies {
 
     // Command line interface library
     implementation("info.picocli:picocli:4.6.3")
+    annotationProcessor("info.picocli:picocli-codegen:4.6.3")
 
 }
 
 application {
     // Define the main class for the application.
     mainClass.set("friendlytemplate.app.App")
+}
+
+tasks.withType<JavaCompile> {
+    val compilerArgs = options.compilerArgs
+    compilerArgs.add("-Aproject=${project.group}/${project.name}")
+}
+tasks.getByName("run", JavaExec::class) {
+    standardInput = System.`in`
 }
