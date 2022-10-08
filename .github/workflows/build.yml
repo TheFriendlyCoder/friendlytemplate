@@ -17,4 +17,9 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Execute Gradle build
-        run: ./gradlew build
+        run: ./gradlew shadowJar
+      - name: Upload fat jar
+        uses: actions/upload-artifact@v3
+        with:
+          name: fat-jar
+          path: app/build/libs/friendlytemplate.jar
