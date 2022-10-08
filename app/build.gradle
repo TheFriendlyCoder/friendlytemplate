@@ -12,6 +12,14 @@ dependencies {
     implementation 'org.apache.commons:commons-text'
     implementation project(':utilities')
     implementation 'info.picocli:picocli:4.6.3'
+    // jgit dependencies
+    implementation 'org.eclipse.jgit:org.eclipse.jgit:6.3.0.202209071007-r'
+    //implementation 'org.eclipse.jgit:org.eclipse.jgit.archive:6.3.0.202209071007-r'
+    //implementation 'org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:6.3.0.202209071007-r'
+
+    // Needed to squelch logging warnings in jgit
+    implementation 'org.slf4j:slf4j-simple:2.0.3'
+
     annotationProcessor 'info.picocli:picocli-codegen:4.6.3'
 }
 
