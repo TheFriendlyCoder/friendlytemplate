@@ -5,9 +5,5 @@
  */
 
 plugins {
-    id("friendlytemplate.java-library-conventions")
-}
-
-dependencies {
-    api(project(":list"))
+    id 'friendlytemplate.java-library-conventions'
 }
