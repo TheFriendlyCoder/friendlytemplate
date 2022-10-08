@@ -11,9 +11,21 @@ plugins {
 dependencies {
     implementation 'org.apache.commons:commons-text'
     implementation project(':utilities')
+    implementation 'info.picocli:picocli:4.6.3'
+    annotationProcessor 'info.picocli:picocli-codegen:4.6.3'
+}
+
+// Enable picocli annotation processor
+compileJava {
+    options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]
 }
 
 application {
     // Define the main class for the application.
     mainClass = 'friendlytemplate.app.App'
+}
+
+// Allow us to run the cli tool using ./gradlew run
+run {
+    standardInput = System.in
 }
