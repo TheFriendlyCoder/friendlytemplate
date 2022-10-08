@@ -6,6 +6,9 @@
 
 plugins {
     id 'friendlytemplate.java-application-conventions'
+    // Needed to construct fat jars (./gradlew shadowJar)
+    // output will be in ./app/build/lib/friendlytemplate.jar
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 dependencies {
@@ -27,10 +30,12 @@ dependencies {
     // yaml parser
     implementation 'org.yaml:snakeyaml:1.33'
 
+    // library for writing declarative unit test matchers
+    testImplementation 'org.hamcrest:hamcrest:2.2'
 }
 
-// Enable picocli annotation processor
 compileJava {
+    // Enable picocli annotation processor
     options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]
 }
 
@@ -39,7 +44,15 @@ application {
     mainClass = 'friendlytemplate.app.App'
 }
 
-// Allow us to run the cli tool using ./gradlew run
 run {
+    // Allow us to run the cli tool using ./gradlew run
     standardInput = System.in
+}
+
+shadowJar {
+    archiveBaseName.set('friendlytemplate')
+    // Removes the "-all" suffix on the generated jar name
+    archiveClassifier.set('')
+    // Used to remove the version number from the jar file name
+    archiveVersion.set('')
 }
