@@ -11,3 +11,8 @@ plugins {
 dependencies {
     api project(':list')
 }
+
+checkstyle {
+    // Disable style checks on unit tests
+    sourceSets = [project.sourceSets.main]
+}

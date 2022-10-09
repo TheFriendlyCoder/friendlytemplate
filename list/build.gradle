@@ -7,3 +7,8 @@
 plugins {
     id 'friendlytemplate.java-library-conventions'
 }
+
+checkstyle {
+    // Disable style checks on unit tests
+    sourceSets = [project.sourceSets.main]
+}

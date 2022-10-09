@@ -56,3 +56,8 @@ shadowJar {
     // Used to remove the version number from the jar file name
     archiveVersion.set('')
 }
+
+checkstyle {
+    // Disable style checks on unit tests
+    sourceSets = [project.sourceSets.main]
+}
