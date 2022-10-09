@@ -9,6 +9,8 @@ plugins {
     // Needed to construct fat jars (./gradlew shadowJar)
     // output will be in ./app/build/lib/friendlytemplate.jar
     id 'com.github.johnrengelman.shadow' version '7.1.2'
+    // test coverage tool
+    id 'jacoco'
 }
 
 dependencies {
@@ -61,3 +63,24 @@ checkstyle {
     // Disable style checks on unit tests
     sourceSets = [project.sourceSets.main]
 }
+
+test {
+    finalizedBy jacocoTestReport // report is always generated after tests run
+}
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
+}
+
+// Fail the build if the coverage threshold falls below reasonable limit
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.59
+            }
+        }
+    }
+}
+
+// to run coverage verification during the build (and fail when appropriate)
+check.dependsOn jacocoTestCoverageVerification

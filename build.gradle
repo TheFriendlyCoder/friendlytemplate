@@ -17,5 +17,6 @@ subprojects {
         showViolations = true
         maxWarnings = 0
     }
-
 }
+
+
