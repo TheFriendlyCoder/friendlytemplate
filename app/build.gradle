@@ -66,6 +66,14 @@ shadowJar {
     }
 }
 
+jar {
+    manifest {
+        attributes(
+                'Main-Class': application.mainClass,
+                'Implementation-Title': project.name,
+                'Implementation-Version': project.version)
+    }
+}
 checkstyle {
     // Disable style checks on unit tests
     sourceSets = [project.sourceSets.main]
@@ -73,6 +81,11 @@ checkstyle {
 
 test {
     finalizedBy jacocoTestReport // report is always generated after tests run
+
+    testLogging {
+        // Show summary info about all tests as they are run
+        events "PASSED", "SKIPPED", "FAILED"
+    }
 }
 jacocoTestReport {
     dependsOn test // tests are required to run before generating the report
