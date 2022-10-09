@@ -22,7 +22,7 @@ import picocli.CommandLine.Spec;
 
 
 @Command(name = "friendlytemplate", mixinStandardHelpOptions = true,
-        version = "friendlytemplate 1.0",
+        versionProvider = App.AppVersionProvider.class,
         description =
                 "Produces source code projects based on a template definition")
 class App implements Callable<Integer> {
@@ -41,6 +41,16 @@ class App implements Callable<Integer> {
             description = "Output folder where the new source project is to "
                     + "be generated")
     private Path destPath;
+
+    /**
+     * Helper class that loads version info from the app package.
+     */
+    static class AppVersionProvider implements CommandLine.IVersionProvider {
+        public String[] getVersion() {
+            String version = App.class.getPackage().getImplementationVersion();
+            return new String[] { "${COMMAND-FULL-NAME} version " + version };
+        }
+    }
 
     @Override
     public Integer call() throws Exception {
