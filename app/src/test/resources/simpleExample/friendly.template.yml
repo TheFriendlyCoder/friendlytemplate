@@ -1,4 +1,4 @@
-template_version: 1
+templateVersion: 1
 main:
   fields:
     - project_name

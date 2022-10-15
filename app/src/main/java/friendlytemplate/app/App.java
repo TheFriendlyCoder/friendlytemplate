@@ -3,6 +3,7 @@ package friendlytemplate.app;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,10 +65,23 @@ class App implements Callable<Integer> {
         if (!configFilePath.toFile().exists()) {
             throw new FileNotFoundException("Config file " + configFilePath + " not found");
         }
-        ConfigFile configFile = new ConfigFile(
+        ConfigFile configFile = ConfigFile.fromYaml(
                 new FileInputStream(configFilePath.toFile()));
         assert configFile.getTemplateVersion() == 1;
 
+        // Load all fields for the template from the config file and see if
+        // the user has provided parameters for them on the command line or if
+        // we need to load them from some other means
+        // TODO: add support for prompting user for field values
+        // TODO: add support for user to provide CLI parameters for each field
+        // TODO: add some type of online help for fields
+        configFile.getFieldNames().forEach(field -> {
+            spec.commandLine().getOut().println("Processing field " + field);
+            spec.addOption(CommandLine.Model.OptionSpec.builder("--" + field)
+                    .paramLabel("PROJECTNAME")
+                    .type(String.class)
+                    .description("Name of the project").build());
+        });
         /*String repo = "https://github.com/TheFriendlyCoder/friendlytemplate";
         Path outPath = Files.createTempDirectory("friendlytemplate");
         System.out.println("Output folder is " + outPath);

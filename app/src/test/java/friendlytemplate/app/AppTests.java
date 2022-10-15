@@ -48,6 +48,7 @@ public class AppTests {
         // Make sure the input and output paths are mentioned in the stdout
         assertThat(sw.toString(), containsString(templateDir));
         assertThat(sw.toString(), containsString(tempDir.toString()));
+        assertThat(sw.toString(), containsString("project_name"));
     }
 
     @Test
@@ -75,4 +76,5 @@ public class AppTests {
         assertThat(stderr.toString(), containsString("not found"));
         assertThat(stderr.toString(), containsString(sourceDir.toString()));
     }
+
 }
