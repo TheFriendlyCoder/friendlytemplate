@@ -1,5 +1,7 @@
 package friendlytemplate.app;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import org.slf4j.Logger;
@@ -54,8 +56,18 @@ class App implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        spec.commandLine().getOut().println("Generating project...");
-        logger.debug("Running ...");
+        spec.commandLine().getOut().println("Running from " + sourcePath
+                + " to " + destPath + "...");
+        logger.debug("Generating project...");
+
+        Path configFilePath = sourcePath.resolve("friendly.template.yml");
+        if (!configFilePath.toFile().exists()) {
+            throw new FileNotFoundException("Config file " + configFilePath + " not found");
+        }
+        ConfigFile configFile = new ConfigFile(
+                new FileInputStream(configFilePath.toFile()));
+        assert configFile.getTemplateVersion() == 1;
+
         /*String repo = "https://github.com/TheFriendlyCoder/friendlytemplate";
         Path outPath = Files.createTempDirectory("friendlytemplate");
         System.out.println("Output folder is " + outPath);
@@ -86,16 +98,20 @@ class App implements Callable<Integer> {
         return 0;
     }
 
-    // this example implements Callable, so parsing, error handling and
-    // handling user requests for usage help or version help can be done with
-    // one line of code.
     public static void main(String... args) {
         // Set up logging interface
         // See the simplelogger.properties file in the resources section for
         // more config options
         // System.setProperty(
         // org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG");
-        int exitCode = new CommandLine(new App()).execute(args);
+
+        CommandLine app = new CommandLine(new App());
+        // TODO: use this operation to customize the error output from
+        //       exceptions (ie: to avoid stack traces on the console)
+        //app.setExecutionExceptionHandler();
+        int exitCode = app.execute(args);
         System.exit(exitCode);
+
+
     }
 }
