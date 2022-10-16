@@ -1,9 +1,14 @@
 package friendlytemplate.app;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,14 +123,90 @@ class App implements Callable<Integer> {
         // more config options
         // System.setProperty(
         // org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG");
-
-        CommandLine app = new CommandLine(new App());
+        System.out.println(args[0]);
+        /*CommandLine app = new CommandLine(new App());
         // TODO: use this operation to customize the error output from
         //       exceptions (ie: to avoid stack traces on the console)
         //app.setExecutionExceptionHandler();
         int exitCode = app.execute(args);
+        System.exit(exitCode);*/
+
+        CommandSpec spec = CommandSpec.create();
+        spec.mixinStandardHelpOptions(true);
+
+        CommandLine commandLine = new CommandLine(spec);
+        commandLine.setExecutionStrategy(App::run);
+        spec.addPositional(CommandLine.Model.PositionalParamSpec.builder()
+                .paramLabel("SOURCE")
+                .type(Path.class)
+                .description("The source folder containing the template")
+                .build());
+        //CommandLine.ParseResult pr = commandLine.parseArgs(args);
+        //Path sourcePath = pr.matchedPositionalValue(0, Paths.get(".").toAbsolutePath());
+        Path sourcePath = new File(args[0]).toPath().toAbsolutePath();
+        Path configFilePath = sourcePath.resolve("friendly.template.yml");
+        if (configFilePath.toFile().exists()) {
+            try {
+                ConfigFile configFile = ConfigFile.fromYaml(
+                        new FileInputStream(configFilePath.toFile()));
+                configFile.getFieldNames().forEach(field -> {
+                    spec.addOption(CommandLine.Model.OptionSpec.builder("--" + field)
+                            .paramLabel(field)
+                            .type(String.class)
+                            .description("Name of the project")
+                            .interactive(true)
+                            .prompt("Give the project name")
+                            .required(true)
+                            .required(true)
+                            .build());
+                });
+            } catch (FileNotFoundException err) {
+                System.out.println("1Config file not found");
+                return;
+            }
+        }
+        int exitCode = commandLine.execute(args);
         System.exit(exitCode);
 
+    }
+    static int run (CommandLine.ParseResult pr) {
+        Integer helpExitCode = CommandLine.executeHelpRequest(pr);
+        if (helpExitCode != null) { return helpExitCode; }
 
+        //System.out.println(pr.matchedPositionals().get(0).paramLabel());
+        Path sourcePath = pr.matchedPositionalValue(0, Paths.get(".").toAbsolutePath());
+        Path configFilePath = sourcePath.resolve("friendly.template.yml");
+        if (!configFilePath.toFile().exists()) {
+            //throw new FileNotFoundException("Config file " + configFilePath + " not found");
+            System.out.println("File not found: " + configFilePath);
+            return -1;
+        }
+        try {
+            ConfigFile configFile = ConfigFile.fromYaml(
+                    new FileInputStream(configFilePath.toFile()));
+            System.out.println("Template version " + configFile.getTemplateVersion());
+
+            Map<String, String> params = new HashMap<>();
+//            pr.matchedPositionals().forEach(arg-> {
+//                if (!configFile.getFieldNames().contains(arg.paramLabel())) {
+//                    return;
+//                }
+//                params.put(arg.paramLabel(), arg.getValue());
+//            });
+            List<String> allFields = configFile.getFieldNames();
+            allFields.forEach(fieldName-> {
+                if (pr.hasMatchedOption(fieldName)) {
+                    CommandLine.Model.OptionSpec newValue = pr.matchedOption(fieldName);
+                    System.out.println("Value for field is " + newValue.getValue());
+                    params.put(fieldName, newValue.getValue());
+                }
+            });
+            System.out.println(params);
+        } catch (FileNotFoundException err) {
+            System.out.println("Config file not found");
+            return -1;
+        }
+
+        return 0;
     }
 }
