@@ -14,14 +14,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class AppTests {
 
     @Test
-    void testAppVersion() {
-        App app = new App();
-        CommandLine cmd = new CommandLine(app);
+    void testAppVersion() throws Exception {
+        String[] args = new String[] {"--version"};
+        CommandLine cmd = App.defaultCommandLineSpec(args);
 
         StringWriter sw = new StringWriter();
         cmd.setOut(new PrintWriter(sw));
 
-        int exitCode = cmd.execute("--version");
+        int exitCode = cmd.execute(args);
         assertEquals(0, exitCode);
         // NOTE: the version number for the package currently doesn't get
         // loaded properly from the app when it is run from within the local
@@ -30,17 +30,17 @@ public class AppTests {
     }
 
     @Test
-    void testBasicTemplate(@TempDir Path tempDir) {
-        App app = new App();
-        CommandLine cmd = new CommandLine(app);
+    void testBasicTemplate(@TempDir Path tempDir) throws Exception {
 
+        String templateDir = getClass().getClassLoader().getResource("simpleExample").getPath();
+        String[] args = new String[] {templateDir, tempDir.toString(), "--project_name=testproj"};
+
+        CommandLine cmd = App.defaultCommandLineSpec(args);
         StringWriter sw = new StringWriter();
         cmd.setOut(new PrintWriter(sw));
 
-        String templateDir = getClass().getClassLoader().getResource("simpleExample").getPath();
-
         // Flex production code
-        int exitCode = cmd.execute(templateDir, tempDir.toString());
+        int exitCode = cmd.execute(args);
 
         // Make sure or operation completes successfully
         assertEquals(0, exitCode);
@@ -52,7 +52,7 @@ public class AppTests {
     }
 
     @Test
-    void testMissingTemplateFile(@TempDir Path tempDir) {
+    void testMissingTemplateFile(@TempDir Path tempDir) throws Exception {
         // Make an empty source folder which doesn't contain a template
         // file defining the project template
         Path sourceDir = tempDir.resolve("source");
@@ -60,17 +60,16 @@ public class AppTests {
         Path targetDir = tempDir.resolve("target");
         targetDir.toFile().mkdir();
 
-        App app = new App();
-        CommandLine cmd = new CommandLine(app);
-
+        String[] args = new String[] {sourceDir.toString(), targetDir.toString()};
+        CommandLine cmd = App.defaultCommandLineSpec(args);
         StringWriter stderr = new StringWriter();
         cmd.setErr(new PrintWriter(stderr));
 
         // Flex production code
-        int exitCode = cmd.execute(sourceDir.toString(), targetDir.toString());
+        int exitCode = cmd.execute(args);
 
         // Make sure command fails
-        assertEquals(1, exitCode);
+        assertEquals(-1, exitCode);
 
         // Make sure error output has a useful error message
         assertThat(stderr.toString(), containsString("not found"));
