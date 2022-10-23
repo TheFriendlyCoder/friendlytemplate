@@ -171,16 +171,17 @@ class App {
         // Next, parse the template config file from the source folder
         Path sourcePath = pr.matchedPositional(0).getValue();
         commandLine.getOut().println("Processing template " + sourcePath);
-        Path configFilePath = sourcePath.resolve("friendly.template.yml");
-        if (!configFilePath.toFile().exists()) {
-            commandLine.getErr().println("File not found: " + configFilePath);
+        if (!sourcePath.toFile().exists()) {
+            commandLine.getErr().println("Template folder doesn't exist: " + sourcePath);
             return -1;
         }
+
+        Path configFilePath = sourcePath.resolve("friendly.template.yml");
         ConfigFile configFile;
         try {
             configFile = ConfigFile.fromYaml(new FileInputStream(configFilePath.toFile()));
         } catch (FileNotFoundException err) {
-            commandLine.getErr().println("Config file not found");
+            commandLine.getErr().println("Unable to read config file: " + configFilePath);
             return -1;
         }
         commandLine.getOut().println("Template version " + configFile.getTemplateVersion());

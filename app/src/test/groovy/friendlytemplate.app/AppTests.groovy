@@ -51,12 +51,11 @@ class AppTests extends Specification {
 
     void "Missing template folder"() {
         given:
-        Path sourceDir = tempDir.resolve("source")
-        sourceDir.toFile().mkdir()
+        Path templateDir = tempDir.resolve("source")
         Path targetDir = tempDir.resolve("target")
         targetDir.toFile().mkdir()
 
-        String[] args = [sourceDir.toString(), targetDir.toString()]
+        String[] args = [templateDir.toString(), targetDir.toString()]
         CommandLine cmd = App.defaultCommandLineSpec(args)
         StringWriter stderr = new StringWriter()
         cmd.setErr(new PrintWriter(stderr))
@@ -67,7 +66,105 @@ class AppTests extends Specification {
 
         then:
         exitCode == -1
-        output.contains("not found")
-        output.contains(sourceDir.toString())
+        output.contains("folder doesn't exist")
+        output.contains(templateDir.toString())
+    }
+
+    void "Missing template config file"() {
+        given:
+        Path templateDir = tempDir.resolve("source")
+        templateDir.toFile().mkdir()
+        Path targetDir = tempDir.resolve("target")
+        targetDir.toFile().mkdir()
+
+        String[] args = [templateDir.toString(), targetDir.toString()]
+        CommandLine cmd = App.defaultCommandLineSpec(args)
+        StringWriter stderr = new StringWriter()
+        cmd.setErr(new PrintWriter(stderr))
+
+        when:
+        int exitCode = cmd.execute(args)
+        String output = stderr.toString()
+
+        then:
+        exitCode == -1
+        output.contains("Unable to read config file")
+        output.contains(templateDir.toString())
+    }
+
+    void "Missing required target parameter"() {
+        given:
+        String sourceDir = getClass().getClassLoader().getResource("simpleExample").getPath()
+
+        String[] args = [sourceDir.toString()]
+        CommandLine cmd = App.defaultCommandLineSpec(args)
+        StringWriter stdout = new StringWriter()
+        cmd.setOut(new PrintWriter(stdout))
+
+        when:
+        int exitCode = cmd.execute(args)
+        String output = stdout.toString()
+
+        then:
+        exitCode == 0
+        output.contains("friendlytemplate")
+        output.contains("Usage")
+    }
+
+    void "Show usage message when no parameters given"() {
+        given:
+        String[] args = []
+        CommandLine cmd = App.defaultCommandLineSpec(args)
+        StringWriter stdout = new StringWriter()
+        cmd.setOut(new PrintWriter(stdout))
+
+        when:
+        int exitCode = cmd.execute(args)
+        String output = stdout.toString()
+
+        then:
+        exitCode == 0
+        output.contains("friendlytemplate")
+        output.contains("Usage")
+    }
+
+    void "Target folder does not exist"() {
+        given:
+        String sourceDir = getClass().getClassLoader().getResource("simpleExample").getPath()
+        Path targetDir = tempDir.resolve("target")
+
+        String[] args = [sourceDir.toString(), targetDir.toString(), "--project_name=testproj"]
+        CommandLine cmd = App.defaultCommandLineSpec(args)
+        StringWriter stderr = new StringWriter()
+        cmd.setErr(new PrintWriter(stderr))
+
+        when:
+        int exitCode = cmd.execute(args)
+        String output = stderr.toString()
+
+        then:
+        exitCode == -1
+        output.contains(targetDir.toString())
+        output.contains("folder doesn't exist")
+    }
+
+    void "CLI should prompt user for missing field parameters"() {
+        given:
+        String sourceDir = getClass().getClassLoader().getResource("simpleExample").getPath()
+        Path targetDir = tempDir.resolve("target")
+        targetDir.toFile().mkdirs()
+
+        String[] args = [sourceDir.toString(), targetDir.toString()]
+        CommandLine cmd = App.defaultCommandLineSpec(args)
+        StringWriter stdout = new StringWriter()
+        cmd.setOut(new PrintWriter(stdout))
+
+        when:
+        int exitCode = cmd.execute(args)
+        String output = stdout.toString()
+
+        then:
+        exitCode == 0
+        output.contains("project_name")
     }
 }
