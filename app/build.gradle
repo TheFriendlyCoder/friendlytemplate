@@ -35,13 +35,14 @@ dependencies {
     implementation 'org.yaml:snakeyaml:1.33'
 
     // library for writing declarative unit test matchers
-    testImplementation 'org.hamcrest:hamcrest:2.2'
+    //testImplementation 'org.hamcrest:hamcrest:2.2'
 
     // Spock test framework
-    //implementation platform('org.apache.groovy:groovy-bom:4.0.5')
-    //implementation 'org.apache.groovy:groovy'
+//    implementation platform('org.apache.groovy:groovy-bom:4.0.5')
+//    implementation 'org.apache.groovy:groovy'
     testImplementation platform("org.spockframework:spock-bom:2.3-groovy-4.0")
     testImplementation "org.spockframework:spock-core"
+    //testImplementation 'org.codehaus.groovy:groovy-all:2.4.12'
 }
 
 compileJava {
@@ -106,7 +107,7 @@ jacocoTestCoverageVerification {
     violationRules {
         rule {
             limit {
-                minimum = 0.2
+                minimum = 0.80
             }
         }
     }
