@@ -1,7 +1,7 @@
 templateVersion: 1
 main:
   fields:
-    - project_name
+    - package_name
   files:
     - project.prop
     - "src.{{ package_name }}/version.txt"

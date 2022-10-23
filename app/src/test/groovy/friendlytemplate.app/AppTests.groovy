@@ -32,7 +32,7 @@ class AppTests extends Specification {
     def "Process basic template"() {
         given:
         String templateDir = getClass().getClassLoader().getResource("simpleExample").getPath()
-        String[] args = [templateDir, tempDir.toString(), "--project_name=testproj"]
+        String[] args = [templateDir, tempDir.toString(), "--package_name=testproj"]
 
         CommandLine cmd = App.defaultCommandLineSpec(args)
         StringWriter sw = new StringWriter()
@@ -46,7 +46,7 @@ class AppTests extends Specification {
         exitCode == 0
         output.contains(templateDir)
         output.contains(tempDir.toString())
-        output.contains("project_name")
+        output.contains("package_name")
     }
 
     void "Missing template folder"() {
@@ -133,7 +133,7 @@ class AppTests extends Specification {
         String sourceDir = getClass().getClassLoader().getResource("simpleExample").getPath()
         Path targetDir = tempDir.resolve("target")
 
-        String[] args = [sourceDir.toString(), targetDir.toString(), "--project_name=testproj"]
+        String[] args = [sourceDir.toString(), targetDir.toString(), "--package_name=testproj"]
         CommandLine cmd = App.defaultCommandLineSpec(args)
         StringWriter stderr = new StringWriter()
         cmd.setErr(new PrintWriter(stderr))
@@ -165,6 +165,6 @@ class AppTests extends Specification {
 
         then:
         exitCode == 0
-        output.contains("project_name")
+        output.contains("package_name")
     }
 }

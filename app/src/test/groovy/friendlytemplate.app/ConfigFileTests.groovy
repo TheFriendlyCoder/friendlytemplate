@@ -30,6 +30,6 @@ class ConfigFileTests extends Specification {
 
         then:
         values.size() == 1
-        values[0] == "project_name"
+        values[0] == "package_name"
     }
 }
