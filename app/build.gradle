@@ -11,6 +11,8 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '7.1.2'
     // test coverage tool
     id 'jacoco'
+    // Needed for spock framework
+    id "groovy"
 }
 
 dependencies {
@@ -34,6 +36,12 @@ dependencies {
 
     // library for writing declarative unit test matchers
     testImplementation 'org.hamcrest:hamcrest:2.2'
+
+    // Spock test framework
+    //implementation platform('org.apache.groovy:groovy-bom:4.0.5')
+    //implementation 'org.apache.groovy:groovy'
+    testImplementation platform("org.spockframework:spock-bom:2.3-groovy-4.0")
+    testImplementation "org.spockframework:spock-core"
 }
 
 compileJava {
@@ -86,6 +94,8 @@ test {
         // Show summary info about all tests as they are run
         events "PASSED", "SKIPPED", "FAILED"
     }
+
+    //useJUnitPlatform()
 }
 jacocoTestReport {
     dependsOn test // tests are required to run before generating the report
