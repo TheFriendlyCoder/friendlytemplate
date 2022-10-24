@@ -1,12 +1,14 @@
 package friendlytemplate.app;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.introspector.BeanAccess;
@@ -19,6 +21,7 @@ public class ConfigFile {
     private Map<String, List<String>> main;
 
     private Path templateDir;
+
     /**
      * Constructor.
      *
@@ -38,12 +41,21 @@ public class ConfigFile {
         return yaml.load(sourceData);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param sourceFile Path to the config file to be parsed
+
+     * @return instance of the newly constructed class
+     * @throws FileNotFoundException if the config file is not found
+     */
     public static ConfigFile fromYaml(File sourceFile) throws FileNotFoundException {
         FileInputStream temp = new FileInputStream(sourceFile);
         ConfigFile retval = fromYaml(temp);
         retval.templateDir = sourceFile.getParentFile().toPath();
         return retval;
     }
+    
     public int getTemplateVersion() {
         return templateVersion;
     }
