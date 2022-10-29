@@ -4,9 +4,7 @@
 
 package friendlytemplate.list;
 
-/**
- * Sample class definition.
- **/
+/** Sample class definition. */
 public class LinkedList {
 
     private Node head;
@@ -15,7 +13,7 @@ public class LinkedList {
      * Adds a new element to the list.
      *
      * @param element data to add to the list
-     **/
+     */
     public void add(String element) {
         Node newNode = new Node(element);
 

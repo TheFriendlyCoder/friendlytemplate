@@ -8,6 +8,11 @@ plugins {
     // Support convention plugins written in Groovy. Convention plugins are build scripts in 'src/main' that automatically become available as plugins in the main build.
     id 'groovy-gradle-plugin'
 }
+dependencies {
+    // Required to apply the Spotless plugin to all sub-projects in the repository
+    implementation group: 'com.diffplug.spotless', name: 'spotless-plugin-gradle', version: '6.11.0'
+}
+
 
 repositories {
     // Use the plugin portal to apply community plugins in convention plugins.

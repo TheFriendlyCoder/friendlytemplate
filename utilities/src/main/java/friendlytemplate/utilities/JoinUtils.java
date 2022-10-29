@@ -6,9 +6,7 @@ package friendlytemplate.utilities;
 
 import friendlytemplate.list.LinkedList;
 
-/**
- * Another helper class.
- */
+/** Another helper class. */
 class JoinUtils {
     /**
      * another helper method.

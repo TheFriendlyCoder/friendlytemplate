@@ -6,9 +6,7 @@ package friendlytemplate.utilities;
 
 import friendlytemplate.list.LinkedList;
 
-/**
- * Another sample class.
- */
+/** Another sample class. */
 class SplitUtils {
     /**
      * another helper function.

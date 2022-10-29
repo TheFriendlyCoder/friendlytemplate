@@ -13,9 +13,7 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.introspector.BeanAccess;
 
-/**
- * Abstraction around a FriendlyTemplate configuration file.
- */
+/** Abstraction around a FriendlyTemplate configuration file. */
 public class ConfigFile {
     private int templateVersion;
     private Map<String, List<String>> main;
@@ -25,8 +23,8 @@ public class ConfigFile {
     /**
      * Constructor.
      *
-     * @param sourceData input stream containing YAML configuration data for
-     *                   the template being processed
+     * @param sourceData input stream containing YAML configuration data for the template being
+     *     processed
      */
     static ConfigFile fromYaml(InputStream sourceData) {
         // Ensure our yaml file can be deserialized into the data members
@@ -45,7 +43,6 @@ public class ConfigFile {
      * Constructor.
      *
      * @param sourceFile Path to the config file to be parsed
-
      * @return instance of the newly constructed class
      * @throws FileNotFoundException if the config file is not found
      */
@@ -55,7 +52,7 @@ public class ConfigFile {
         retval.templateDir = sourceFile.getParentFile().toPath();
         return retval;
     }
-    
+
     public int getTemplateVersion() {
         return templateVersion;
     }

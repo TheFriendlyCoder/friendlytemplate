@@ -7,6 +7,8 @@
 plugins {
     // Apply the java Plugin to add support for Java.
     id 'java'
+    // Code cleanup tool
+    id "com.diffplug.spotless"
 }
 
 repositories {
@@ -28,5 +30,20 @@ testing {
             // Use JUnit Jupiter test framework
             useJUnitJupiter('5.8.2')
         }
+    }
+}
+
+spotless {
+    groovy {
+        target '**/.*.groovy'
+    }
+    groovyGradle {
+        target '**/*.gradle'
+    }
+    java {
+        target 'src/main/java/**/*.java'
+        importOrder()
+        removeUnusedImports()
+        googleJavaFormat().aosp()
     }
 }

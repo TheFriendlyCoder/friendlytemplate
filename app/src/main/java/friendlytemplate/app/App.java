@@ -23,7 +23,6 @@ class App {
         return "${COMMAND-FULL-NAME} version " + version;
     }
 
-
     /*@Override
     public Integer call() throws Exception {
         spec.commandLine().getOut().println("Running from " + sourcePath
@@ -83,23 +82,25 @@ class App {
 
     public static CommandLine defaultCommandLineSpec(String... args) throws FileNotFoundException {
         // Setup standard command spec for our app
-        CommandSpec spec = CommandSpec
-                .create()
-                .name("friendlytemplate")
-                .version(getVersion())
-                .mixinStandardHelpOptions(true);
-        spec.usageMessage().description(
-                "Produces source code projects based on a template definition");
-        spec.addPositional(CommandLine.Model.PositionalParamSpec.builder()
-                .paramLabel("SOURCE")
-                .type(Path.class)
-                .description("The source folder containing the template")
-                .build());
-        spec.addPositional(CommandLine.Model.PositionalParamSpec.builder()
-                .paramLabel("TARGET")
-                .type(Path.class)
-                .description("Folder where the new project is to be created")
-                .build());
+        CommandSpec spec =
+                CommandSpec.create()
+                        .name("friendlytemplate")
+                        .version(getVersion())
+                        .mixinStandardHelpOptions(true);
+        spec.usageMessage()
+                .description("Produces source code projects based on a template definition");
+        spec.addPositional(
+                CommandLine.Model.PositionalParamSpec.builder()
+                        .paramLabel("SOURCE")
+                        .type(Path.class)
+                        .description("The source folder containing the template")
+                        .build());
+        spec.addPositional(
+                CommandLine.Model.PositionalParamSpec.builder()
+                        .paramLabel("TARGET")
+                        .type(Path.class)
+                        .description("Folder where the new project is to be created")
+                        .build());
         CommandLine commandLine = new CommandLine(spec);
 
         // Set entrypoint method
@@ -127,15 +128,20 @@ class App {
 
         configFile = ConfigFile.fromYaml(new FileInputStream(configFilePath.toFile()));
 
-        configFile.getFieldNames().forEach(field -> {
-            commandLine.getCommandSpec().addOption(
-                CommandLine.Model.OptionSpec.builder("--" + field)
-                    .paramLabel(field)
-                    .type(String.class)
-                    .description("Name of the project")
-                    .interactive(true)
-                    .build());
-        });
+        configFile
+                .getFieldNames()
+                .forEach(
+                        field -> {
+                            commandLine
+                                    .getCommandSpec()
+                                    .addOption(
+                                            CommandLine.Model.OptionSpec.builder("--" + field)
+                                                    .paramLabel(field)
+                                                    .type(String.class)
+                                                    .description("Name of the project")
+                                                    .interactive(true)
+                                                    .build());
+                        });
 
         return commandLine;
     }
@@ -153,7 +159,6 @@ class App {
         CommandLine commandLine = defaultCommandLineSpec(args);
         int exitCode = commandLine.execute(args);
         System.exit(exitCode);
-
     }
 
     static int run(CommandLine.ParseResult pr) {
@@ -191,21 +196,22 @@ class App {
         Map<String, String> params = new HashMap<>();
         List<String> allFields = configFile.getFieldNames();
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        allFields.forEach(fieldName -> {
-            if (pr.hasMatchedOption(fieldName)) {
-                CommandLine.Model.OptionSpec newValue = pr.matchedOption(fieldName);
-                commandLine.getOut().println("Value for field is " + newValue.getValue());
-                params.put(fieldName, newValue.getValue());
-            } else {
-                commandLine.getOut().print("Provide value for " + fieldName + ":");
-                try {
-                    String value = br.readLine();
-                    params.put(fieldName, value);
-                } catch (IOException err) {
-                    commandLine.getErr().println("Error: " + err);
-                }
-            }
-        });
+        allFields.forEach(
+                fieldName -> {
+                    if (pr.hasMatchedOption(fieldName)) {
+                        CommandLine.Model.OptionSpec newValue = pr.matchedOption(fieldName);
+                        commandLine.getOut().println("Value for field is " + newValue.getValue());
+                        params.put(fieldName, newValue.getValue());
+                    } else {
+                        commandLine.getOut().print("Provide value for " + fieldName + ":");
+                        try {
+                            String value = br.readLine();
+                            params.put(fieldName, value);
+                        } catch (IOException err) {
+                            commandLine.getErr().println("Error: " + err);
+                        }
+                    }
+                });
 
         Path targetPath = pr.matchedPositional(1).getValue();
         if (!targetPath.toFile().exists()) {

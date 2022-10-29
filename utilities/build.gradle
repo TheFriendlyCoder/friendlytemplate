@@ -14,11 +14,6 @@ dependencies {
     api project(':list')
 }
 
-checkstyle {
-    // Disable style checks on unit tests
-    sourceSets = [project.sourceSets.main]
-}
-
 // Fail the build if the coverage threshold falls below reasonable limit
 jacocoTestCoverageVerification {
     violationRules {

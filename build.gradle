@@ -5,18 +5,3 @@ plugins{
     id "nebula.release" version "16.1.0"
 }
 
-subprojects {
-    apply plugin: "checkstyle"
-    checkstyle {
-        //toolVersion = '8.2'
-        configFile = rootProject.file('code_quality/checkstyle/checkstyle.xml')
-        configProperties = [
-                'checkstyle.cache.file': "${buildDir}/checkstyle.cache",
-        ]
-        ignoreFailures = false
-        showViolations = true
-        maxWarnings = 0
-    }
-}
-
-

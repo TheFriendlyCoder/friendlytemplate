@@ -6,9 +6,7 @@ package friendlytemplate.utilities;
 
 import friendlytemplate.list.LinkedList;
 
-/**
- * Sample utility class.
- */
+/** Sample utility class. */
 public class StringUtils {
     /**
      * Joins all strings in a linked list into one string.
