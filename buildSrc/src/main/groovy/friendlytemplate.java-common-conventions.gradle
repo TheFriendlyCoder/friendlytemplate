@@ -49,7 +49,6 @@ test {
 jacocoTestReport {
     dependsOn test // tests are required to run before generating the report
     finalizedBy printCoverage // always show coverage total at the end
-    reports { xml.enabled true }
 }
 // to run coverage verification during the build (and fail when appropriate)
 check.dependsOn jacocoTestCoverageVerification
