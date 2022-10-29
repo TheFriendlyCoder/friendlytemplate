@@ -3,8 +3,6 @@ plugins {
     // Needed to construct fat jars (./gradlew shadowJar)
     // output will be in ./app/build/lib/friendlytemplate.jar
     id 'com.github.johnrengelman.shadow' version '7.1.2'
-    // test coverage tool
-    id 'jacoco'
     // Needed for spock framework
     id "groovy"
 }
@@ -79,7 +77,6 @@ jar {
 }
 
 test {
-    finalizedBy jacocoTestReport // report is always generated after tests run
 
     testLogging {
         // Show summary info about all tests as they are run
@@ -88,20 +85,4 @@ test {
 
     //useJUnitPlatform()
 }
-jacocoTestReport {
-    dependsOn test // tests are required to run before generating the report
-}
 
-// Fail the build if the coverage threshold falls below reasonable limit
-jacocoTestCoverageVerification {
-    violationRules {
-        rule {
-            limit {
-                minimum = 0.90
-            }
-        }
-    }
-}
-
-// to run coverage verification during the build (and fail when appropriate)
-check.dependsOn jacocoTestCoverageVerification

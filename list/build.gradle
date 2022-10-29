@@ -6,20 +6,4 @@
 
 plugins {
     id 'friendlytemplate.java-library-conventions'
-    // test coverage tool
-    id 'jacoco'
-}
-
-// Fail the build if the coverage threshold falls below reasonable limit
-jacocoTestCoverageVerification {
-    violationRules {
-        rule {
-            limit {
-                minimum = 0.89
-            }
-        }
-    }
-}
-
-// to run coverage verification during the build (and fail when appropriate)
-check.dependsOn jacocoTestCoverageVerification
+ }
