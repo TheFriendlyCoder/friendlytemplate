@@ -78,10 +78,7 @@ jar {
 
 test {
 
-    testLogging {
-        // Show summary info about all tests as they are run
-        events "PASSED", "SKIPPED", "FAILED"
-    }
+
 
     //useJUnitPlatform()
 }

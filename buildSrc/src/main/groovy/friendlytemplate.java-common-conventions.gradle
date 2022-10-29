@@ -36,6 +36,16 @@ testing {
     }
 }
 
+test {
+    // Always regenerate test report
+    finalizedBy jacocoTestReport
+
+    testLogging {
+        // Show summary info about all tests as they are run
+        events "PASSED", "SKIPPED", "FAILED"
+    }
+}
+
 jacocoTestReport {
     dependsOn test // tests are required to run before generating the report
     finalizedBy printCoverage // always show coverage total at the end
