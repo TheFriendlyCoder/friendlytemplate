@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.introspector.BeanAccess;
@@ -62,7 +61,7 @@ public class ConfigFile {
     }
 
     public List<Path> getSourceFiles() {
-        return main.get("files").stream().map(Paths::get).collect(Collectors.toList());
+        return main.get("files").stream().map(Paths::get).toList();
     }
 
     public Path getTemplateDir() {
