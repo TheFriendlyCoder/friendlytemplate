@@ -38,7 +38,7 @@ public class ConfigFile {
         // of the ConfigFile class
         ConfigFile retval = yaml.load(sourceData);
 
-        retval.templateDir = sourceFile.getParentFile().toPath();
+        retval.templateDir = sourceFile.getParentFile().toPath().toAbsolutePath();
         return retval;
     }
 
@@ -50,11 +50,12 @@ public class ConfigFile {
         return main.get("fields");
     }
 
-    public List<Path> getSourceFiles() {
-        return main.get("files").stream().map(Paths::get).toList();
+    public List<File> getSourceFiles() {
+        return main.get("files").stream().map(item -> Paths.get(templateDir.toString(), item).toFile()).toList();
     }
 
     public Path getTemplateDir() {
         return templateDir;
     }
+
 }

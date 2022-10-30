@@ -26,6 +26,9 @@ dependencies {
 
     // library for writing declarative unit test matchers
     //testImplementation 'org.hamcrest:hamcrest:2.2'
+
+    // template engine
+    implementation 'io.pebbletemplates:pebble:3.1.6'
 }
 
 compileJava {

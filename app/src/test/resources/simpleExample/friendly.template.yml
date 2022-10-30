@@ -4,5 +4,5 @@ main:
     - package_name
   files:
     - project.prop
-    - "src.{{ package_name }}/version.txt"
+    - "src/{{ package_name }}/version.txt"
 

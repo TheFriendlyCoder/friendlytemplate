@@ -21,31 +21,7 @@ class App {
 
     /*@Override
     public Integer call() throws Exception {
-        spec.commandLine().getOut().println("Running from " + sourcePath
-                + " to " + destPath + "...");
-        logger.debug("Generating project...");
 
-        Path configFilePath = sourcePath.resolve("friendly.template.yml");
-        if (!configFilePath.toFile().exists()) {
-            throw new FileNotFoundException("Config file " + configFilePath + " not found");
-        }
-        ConfigFile configFile = ConfigFile.fromYaml(
-                new FileInputStream(configFilePath.toFile()));
-        assert configFile.getTemplateVersion() == 1;
-
-        // Load all fields for the template from the config file and see if
-        // the user has provided parameters for them on the command line or if
-        // we need to load them from some other means
-        // TODO: add support for prompting user for field values
-        // TODO: add support for user to provide CLI parameters for each field
-        // TODO: add some type of online help for fields
-        configFile.getFieldNames().forEach(field -> {
-            spec.commandLine().getOut().println("Processing field " + field);
-            spec.addOption(CommandLine.Model.OptionSpec.builder("--" + field)
-                    .paramLabel("PROJECTNAME")
-                    .type(String.class)
-                    .description("Name of the project").build());
-        });
         /*String repo = "https://github.com/TheFriendlyCoder/friendlytemplate";
         Path outPath = Files.createTempDirectory("friendlytemplate");
         System.out.println("Output folder is " + outPath);
@@ -57,15 +33,6 @@ class App {
         // Shallow checkout testing...
         git.checkout().addPath("/folder/in/repo")
         System.out.println(git.toString());
-
-        Yaml yaml = new Yaml();
-        InputStream inputStream = this.getClass()
-                .getClassLoader()
-                .getResourceAsStream(file.getAbsolutePath());
-        InputStream inputStream = new FileInputStream(file);
-        Map<String, Object> obj = yaml.load(inputStream);
-        Object obj = yaml.load(inputStream);
-        System.out.println(obj);
 
         byte[] fileContents = Files.readAllBytes(file.toPath());
         byte[] digest = MessageDigest.getInstance(algorithm).
@@ -188,7 +155,7 @@ class App {
 
         // Generate a hash map of all the required fields from the template,
         // prompting the user for any missing values
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         List<String> allFields = configFile.getFieldNames();
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         allFields.forEach(
@@ -216,6 +183,26 @@ class App {
 
         commandLine.getOut().println(params);
         commandLine.getOut().println("Generating project in " + targetPath);
-        return 0;
+
+        TemplateProcessor processor = new TemplateProcessor(targetPath, configFile, params);
+        List<String> errors = processor.validate();
+        if (!errors.isEmpty()) {
+            commandLine.getErr().println("Error configuring template engine:");
+            for (String err: errors) {
+                commandLine.getErr().println("\t" + err);
+            }
+            return -2;
+        }
+        try {
+            if (processor.run()) {
+                return 0;
+            }
+        } catch (IOException err) {
+            commandLine.getErr().println("Error creating project:");
+            commandLine.getErr().println("\t" + err);
+            return -3;
+        }
+        commandLine.getErr().println("Unknown error applying template. See log output for details.");
+        return -4;
     }
 }

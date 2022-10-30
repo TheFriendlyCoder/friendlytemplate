@@ -7,6 +7,7 @@ import spock.lang.TempDir
 import spock.lang.Title
 
 import java.nio.file.Path
+import java.nio.file.Paths
 
 @Title("Tests basic command line interface")
 @Subject(App)
@@ -46,9 +47,16 @@ class ApplicationSpec extends Specification {
         when: "Executing the app via the command line"
         int exitCode = cmd.execute(args)
         String output = sw.toString()
+        println("Folder contents: " + tempDir.toFile().listFiles())
 
-        then: "Output folder should contain pre-processed files from source template"
+        then: "Exit code should indicate success"
         exitCode == 0
+
+        and: "Template files should be pre-processed and copied to target folder"
+        tempDir.resolve("project.prop").toFile().exists()
+        tempDir.resolve(Paths.get("src", "testproj", "version.txt")).toFile().exists();
+
+        and: "Status inforamtion should be shown on standard output"
         with (output) {
             contains(templateDir.toString())
             contains(tempDir.toString())
