@@ -2,26 +2,30 @@ package friendlytemplate.app
 
 import picocli.CommandLine
 import spock.lang.Specification
+import spock.lang.Subject
 import spock.lang.TempDir
+import spock.lang.Title
+
 import java.nio.file.Path
 
-
+@Title("Tests basic command line interface")
+@Subject(App)
 class ApplicationSpec extends Specification {
     @TempDir
     Path tempDir
 
     def "Show version output"() {
-        given:
+        given: "A command line interface with a parameter requesting the application version"
         String[] args = ["--version"]
         CommandLine cmd = App.defaultCommandLineSpec(args)
 
         StringWriter sw = new StringWriter()
         cmd.setOut(new PrintWriter(sw))
 
-        when:
+        when: "Executing application via command line interface"
         int exitCode = cmd.execute(args);
 
-        then:
+        then: "Operation should display the app version to standard output"
         exitCode == 0
         // NOTE: the version number for the package currently doesn't get
         // loaded properly from the app when it is run from within the local
@@ -30,140 +34,159 @@ class ApplicationSpec extends Specification {
     }
 
     def "Process basic template"() {
-        given:
-        String templateDir = getClass().getClassLoader().getResource("simpleExample").getPath()
-        String[] args = [templateDir, tempDir.toString(), "--package_name=testproj"]
+        given: "A path to a fully valid source template"
+        Path templateDir = TestUtils.getPath("simpleExample")
 
+        and: "A command line interface with all required parameters to process the template"
+        String[] args = [templateDir.toString(), tempDir.toString(), "--package_name=testproj"]
         CommandLine cmd = App.defaultCommandLineSpec(args)
         StringWriter sw = new StringWriter()
         cmd.setOut(new PrintWriter(sw))
 
-        when:
+        when: "Executing the app via the command line"
         int exitCode = cmd.execute(args)
         String output = sw.toString()
 
-        then:
+        then: "Output folder should contain pre-processed files from source template"
         exitCode == 0
-        output.contains(templateDir)
-        output.contains(tempDir.toString())
-        output.contains("package_name")
+        with (output) {
+            contains(templateDir.toString())
+            contains(tempDir.toString())
+            contains("package_name")
+        }
     }
 
     void "Missing template folder"() {
-        given:
+        given: "A source and target folder but only the target folder exists"
         Path templateDir = tempDir.resolve("source")
         Path targetDir = tempDir.resolve("target")
         targetDir.toFile().mkdir()
 
+        and: "A command line parser pointing to the missing template folder"
         String[] args = [templateDir.toString(), targetDir.toString()]
         CommandLine cmd = App.defaultCommandLineSpec(args)
         StringWriter stderr = new StringWriter()
         cmd.setErr(new PrintWriter(stderr))
 
-        when:
+        when: "Executing the app via the command line"
         int exitCode = cmd.execute(args)
         String output = stderr.toString()
 
-        then:
+        then: "Application should fail with a sensible exit code and error message"
         exitCode == -1
-        output.contains("folder doesn't exist")
-        output.contains(templateDir.toString())
+        with (output) {
+            contains("folder doesn't exist")
+            contains(templateDir.toString())
+        }
     }
 
     void "Missing template config file"() {
-        given:
+        given: "A source folder without a template config file in it"
         Path templateDir = tempDir.resolve("source")
         templateDir.toFile().mkdir()
         Path targetDir = tempDir.resolve("target")
         targetDir.toFile().mkdir()
 
+        and: "A command line parser pointing to the empty template folder"
         String[] args = [templateDir.toString(), targetDir.toString()]
         CommandLine cmd = App.defaultCommandLineSpec(args)
         StringWriter stderr = new StringWriter()
         cmd.setErr(new PrintWriter(stderr))
 
-        when:
+        when: "Executing the app via the command line"
         int exitCode = cmd.execute(args)
         String output = stderr.toString()
 
-        then:
+        then: "Application should fail with a sensible exit code and error message"
         exitCode == -1
-        output.contains("Unable to read config file")
-        output.contains(templateDir.toString())
+        with (output) {
+            contains("Unable to read config file")
+            contains(templateDir.toString())
+        }
     }
 
     void "Missing required target parameter"() {
-        given:
-        String sourceDir = getClass().getClassLoader().getResource("simpleExample").getPath()
+        given: "The path to a valid template folder"
+        Path sourceDir = TestUtils.getPath("simpleExample")
 
+        and: "A command line parser pointing to the template folder without an output folder "
         String[] args = [sourceDir.toString()]
         CommandLine cmd = App.defaultCommandLineSpec(args)
         StringWriter stdout = new StringWriter()
         cmd.setOut(new PrintWriter(stdout))
 
-        when:
+        when: "Executing the app via the command line"
         int exitCode = cmd.execute(args)
         String output = stdout.toString()
 
-        then:
+        then: "Application should succeed and show the tool default help message"
         exitCode == 0
-        output.contains("friendlytemplate")
-        output.contains("Usage")
+        with (output) {
+            contains("friendlytemplate")
+            contains("Usage")
+        }
     }
 
     void "Show usage message when no parameters given"() {
-        given:
+        given: "A command line parser with no input parameters"
         String[] args = []
         CommandLine cmd = App.defaultCommandLineSpec(args)
         StringWriter stdout = new StringWriter()
         cmd.setOut(new PrintWriter(stdout))
 
-        when:
+        when: "Executing the app via the command line"
         int exitCode = cmd.execute(args)
         String output = stdout.toString()
 
-        then:
+        then: "Application should complete successfully and display the default help message"
         exitCode == 0
-        output.contains("friendlytemplate")
-        output.contains("Usage")
+        with (output) {
+            contains("friendlytemplate")
+            contains("Usage")
+        }
+
     }
 
     void "Target folder does not exist"() {
-        given:
-        String sourceDir = getClass().getClassLoader().getResource("simpleExample").getPath()
+        given: "A valid template folder and a non-existent output folder"
+        Path sourceDir = TestUtils.getPath("simpleExample")
         Path targetDir = tempDir.resolve("target")
 
+        and: "A command line parser pointing to the template folder and non existent target"
         String[] args = [sourceDir.toString(), targetDir.toString(), "--package_name=testproj"]
         CommandLine cmd = App.defaultCommandLineSpec(args)
         StringWriter stderr = new StringWriter()
         cmd.setErr(new PrintWriter(stderr))
 
-        when:
+        when: "Executing the app via the command line"
         int exitCode = cmd.execute(args)
         String output = stderr.toString()
 
-        then:
+        then: "Operation should fail with a sensible exit code and error message"
         exitCode == -1
-        output.contains(targetDir.toString())
-        output.contains("folder doesn't exist")
+        with (output) {
+            contains(targetDir.toString())
+            contains("folder doesn't exist")
+        }
     }
 
     void "CLI should prompt user for missing field parameters"() {
-        given:
-        String sourceDir = getClass().getClassLoader().getResource("simpleExample").getPath()
+        given: "A valid source template and empty target folder"
+        Path sourceDir = TestUtils.getPath("simpleExample")
         Path targetDir = tempDir.resolve("target")
         targetDir.toFile().mkdirs()
 
+        and: "A command line parser pointing to the template and target folder"
         String[] args = [sourceDir.toString(), targetDir.toString()]
         CommandLine cmd = App.defaultCommandLineSpec(args)
         StringWriter stdout = new StringWriter()
         cmd.setOut(new PrintWriter(stdout))
 
-        when:
+        when: "Executing the app via the command line"
         int exitCode = cmd.execute(args)
         String output = stdout.toString()
 
-        then:
+        then: "The app should complete successfully but prompt the user for the missing values"
         exitCode == 0
         output.contains("package_name")
     }

@@ -1,54 +1,35 @@
 package friendlytemplate.app
 
 import spock.lang.Specification
+import spock.lang.Subject
+import spock.lang.Title
 
-import java.nio.file.Path
-
-
+@Title("Tests parsing logic of application config file")
+@Subject(ConfigFile)
 class ConfigFileSpec extends Specification {
-    def "Read template version from config file"() {
-        when:
-        InputStream initialStream = new ByteArrayInputStream("templateVersion: 2".bytes)
-        ConfigFile cfg = ConfigFile.fromYaml(initialStream)
-
-        then:
-        cfg.getTemplateVersion() == 2
-    }
-
     def "Read sample template from disk"() {
-        when:
-        InputStream sample_file = getClass().getClassLoader().getResourceAsStream("simpleExample/friendly.template.yml")
-        ConfigFile cfg = ConfigFile.fromYaml(sample_file)
+        when: "Parsing a config file with standard content"
+        File sourceFile = TestUtils.getFile("simpleExample/friendly.template.yml")
+        ConfigFile cfg = ConfigFile.fromYaml(sourceFile)
 
-        then:
-        cfg.getTemplateVersion() == 1
+        then: "reading of standard properties should work through public API"
+        with (cfg) {
+            templateVersion == 1
+            templateDir == sourceFile.parentFile.toPath()
+        }
     }
 
-    def "Parse common options from config file"() {
-        when:
-        InputStream sample_file = getClass().getClassLoader().getResourceAsStream("simpleExample/friendly.template.yml")
-        ConfigFile cfg = ConfigFile.fromYaml(sample_file)
-        List<String> fieldNames = cfg.getFieldNames()
-        List<Path> files = cfg.getSourceFiles()
+    def "Parse custom options from config file"() {
+        when: "Parsing a config file containing custom options just for a specific project"
+        File sourceFile = TestUtils.getFile("simpleExample/friendly.template.yml")
+        ConfigFile cfg = ConfigFile.fromYaml(sourceFile)
 
-        then:
-        fieldNames.size() == 1
-        fieldNames[0] == "package_name"
-        files.size() == 2
-        files[0].toString() == "project.prop"
-    }
-
-    def "Instantiate config from file"() {
-        when:
-        File sourceFile = new File(getClass().getClassLoader().getResource("simpleExample/friendly.template.yml").toURI());
-        ConfigFile configFile = ConfigFile.fromYaml(sourceFile)
-
-        then:
-        configFile.templateVersion == 1
-        configFile.fieldNames.size() == 1
-        configFile.fieldNames[0] == "package_name"
-        configFile.sourceFiles.size() == 2
-        configFile.sourceFiles[0].toString() == "project.prop"
-        configFile.sourceFiles[1].toString() == "src.{{ package_name }}/version.txt"
+        then: "Custom fields should all be accessible through the public API"
+        with(cfg) {
+            fieldNames.size() == 1
+            fieldNames[0] == "package_name"
+            sourceFiles.size() == 2
+            sourceFiles[0].toString() == "project.prop"
+        }
     }
 }

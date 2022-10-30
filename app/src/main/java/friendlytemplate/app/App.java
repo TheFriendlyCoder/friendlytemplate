@@ -1,10 +1,6 @@
 package friendlytemplate.app;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
@@ -119,14 +115,13 @@ class App {
         assert sourcePathOption.paramLabel().equals("SOURCE");
 
         Path sourcePath = sourcePathOption.getValue();
-        Path configFilePath = sourcePath.toAbsolutePath().resolve("friendly.template.yml");
-        if (!configFilePath.toFile().exists()) {
-            System.err.println("File not found: " + configFilePath);
+        File sourceConfigFile =
+                sourcePath.toAbsolutePath().resolve("friendly.template.yml").toFile();
+        if (!sourceConfigFile.exists()) {
+            System.err.println("File not found: " + sourceConfigFile);
             return commandLine;
         }
-        ConfigFile configFile;
-
-        configFile = ConfigFile.fromYaml(new FileInputStream(configFilePath.toFile()));
+        ConfigFile configFile = ConfigFile.fromYaml(sourceConfigFile);
 
         configFile
                 .getFieldNames()
@@ -181,12 +176,12 @@ class App {
             return -1;
         }
 
-        Path configFilePath = sourcePath.resolve("friendly.template.yml");
+        File sourceConfigFile = sourcePath.resolve("friendly.template.yml").toFile();
         ConfigFile configFile;
         try {
-            configFile = ConfigFile.fromYaml(new FileInputStream(configFilePath.toFile()));
+            configFile = ConfigFile.fromYaml(sourceConfigFile);
         } catch (FileNotFoundException err) {
-            commandLine.getErr().println("Unable to read config file: " + configFilePath);
+            commandLine.getErr().println("Unable to read config file: " + sourceConfigFile);
             return -1;
         }
         commandLine.getOut().println("Template version " + configFile.getTemplateVersion());

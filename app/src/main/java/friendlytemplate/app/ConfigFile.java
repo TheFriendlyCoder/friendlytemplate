@@ -3,7 +3,6 @@ package friendlytemplate.app;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -22,32 +21,23 @@ public class ConfigFile {
     /**
      * Constructor.
      *
-     * @param sourceData input stream containing YAML configuration data for the template being
-     *     processed
+     * @param sourceFile Path to the config file to be parsed
+     * @return instance of the newly constructed class
+     * @throws FileNotFoundException if the config file is not found
      */
-    static ConfigFile fromYaml(InputStream sourceData) {
+    public static ConfigFile fromYaml(File sourceFile) throws FileNotFoundException {
+        FileInputStream sourceData = new FileInputStream(sourceFile);
+
         // Ensure our yaml file can be deserialized into the data members
         // of this class
         Yaml yaml = new Yaml(new Constructor(ConfigFile.class));
         // Give the YAML library permission to populate the private
         // data members of this class
         yaml.setBeanAccess(BeanAccess.FIELD);
-
         // Load the YAML file, deserializing the contents into an instance
         // of the ConfigFile class
-        return yaml.load(sourceData);
-    }
+        ConfigFile retval = yaml.load(sourceData);
 
-    /**
-     * Constructor.
-     *
-     * @param sourceFile Path to the config file to be parsed
-     * @return instance of the newly constructed class
-     * @throws FileNotFoundException if the config file is not found
-     */
-    public static ConfigFile fromYaml(File sourceFile) throws FileNotFoundException {
-        FileInputStream temp = new FileInputStream(sourceFile);
-        ConfigFile retval = fromYaml(temp);
         retval.templateDir = sourceFile.getParentFile().toPath();
         return retval;
     }
