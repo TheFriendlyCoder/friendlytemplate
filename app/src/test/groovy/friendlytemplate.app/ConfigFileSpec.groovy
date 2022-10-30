@@ -5,7 +5,7 @@ import spock.lang.Specification
 import java.nio.file.Path
 
 
-class ConfigFileTests extends Specification {
+class ConfigFileSpec extends Specification {
     def "Read template version from config file"() {
         when:
         InputStream initialStream = new ByteArrayInputStream("templateVersion: 2".bytes)

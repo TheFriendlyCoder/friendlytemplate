@@ -3,8 +3,6 @@ plugins {
     // Needed to construct fat jars (./gradlew shadowJar)
     // output will be in ./app/build/lib/friendlytemplate.jar
     id 'com.github.johnrengelman.shadow' version '7.1.2'
-    // Needed for spock framework
-    id "groovy"
 }
 
 dependencies {
@@ -28,13 +26,6 @@ dependencies {
 
     // library for writing declarative unit test matchers
     //testImplementation 'org.hamcrest:hamcrest:2.2'
-
-    // Spock test framework
-//    implementation platform('org.apache.groovy:groovy-bom:4.0.5')
-//    implementation 'org.apache.groovy:groovy'
-    testImplementation platform("org.spockframework:spock-bom:2.3-groovy-4.0")
-    testImplementation "org.spockframework:spock-core"
-    //testImplementation 'org.codehaus.groovy:groovy-all:2.4.12'
 }
 
 compileJava {
@@ -74,12 +65,5 @@ jar {
                 'Implementation-Title': project.name,
                 'Implementation-Version': project.version)
     }
-}
-
-test {
-
-
-
-    //useJUnitPlatform()
 }
 

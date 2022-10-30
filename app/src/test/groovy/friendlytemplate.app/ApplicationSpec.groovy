@@ -6,7 +6,7 @@ import spock.lang.TempDir
 import java.nio.file.Path
 
 
-class AppTests extends Specification {
+class ApplicationSpec extends Specification {
     @TempDir
     Path tempDir
 

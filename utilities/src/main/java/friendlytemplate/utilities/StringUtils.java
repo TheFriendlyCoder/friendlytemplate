@@ -4,27 +4,12 @@
 
 package friendlytemplate.utilities;
 
-import friendlytemplate.list.LinkedList;
-
 /** Sample utility class. */
 public class StringUtils {
-    /**
-     * Joins all strings in a linked list into one string.
-     *
-     * @param source linked list containing strings to combine
-     * @return combined representation
-     */
-    public static String join(LinkedList source) {
-        return JoinUtils.join(source);
-    }
+    private StringUtils() {}
 
-    /**
-     * Splits a single string into words and stores results in linked list.
-     *
-     * @param source string containing 1 or more words
-     * @return linked list containing all words split from original string
-     */
-    public static LinkedList split(String source) {
-        return SplitUtils.split(source);
+    /** sample library function that just returns 'Hello World' */
+    public static String getMessage() {
+        return "Hello World";
     }
 }
